@@ -30,15 +30,15 @@ export default class Start extends React.Component {
            
             <ImageBackground source={image} style={styles.backgroundImage} >
                <View style={styles.container}>
-                <Text style={{ color: "#Black", fontSize: 15, fontWeight: 700 }}>What's the topic?</Text>
+                <Text style={{ color: "#Black", fontSize: 12, fontWeight: 600 }}>Introduce yourself!</Text>
                     <TextInput 
                      style={{ height: 40, borderColor: "grey", borderWidth: 1, backgroundColor: "white", padding: 10,  }}
                      onChangeText={(name) => this.setState({ name })}
                      value={this.state.name}
-                     placeholder="Chat here"
+                     placeholder="Type here..."
                      />
                     <Button
-                        title="Package"
+                        title="Chat"
                         onPress={() => 
                             this.props.navigation.navigate("Chat", { name: this.state.name })
                          }  style={{ color: "#000", backgroundColor: "#fff" }}
