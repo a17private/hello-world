@@ -16,8 +16,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
       },
   });
-  
-  navigate('Screen2', { name: this.state.name })
 
 export default class Start extends React.Component {
     constructor(props) {
