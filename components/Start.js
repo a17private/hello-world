@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
       },
   });
   
+  navigate('Screen2', { name: this.state.name })
 
 export default class Start extends React.Component {
     constructor(props) {
@@ -24,6 +25,7 @@ export default class Start extends React.Component {
         this.state = { name: "" };
     }
 
+    
     render() {
         return(
            
