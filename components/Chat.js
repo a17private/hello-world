@@ -13,6 +13,7 @@ export default class Chat extends React.Component {
          messages: [],
        };
         
+
       
       if (!firebase.apps.length){
         firebase.initializeApp( {
