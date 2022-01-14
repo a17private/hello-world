@@ -28,7 +28,7 @@ export default class Chat extends React.Component {
         }
 
         // create a reference to the active user's documents (shopping lists)
-        this.referenceChatMessages = firebase.firestore().collection('messagees').where("uid", "==", this.state.uid);
+        this.referenceChatMessages = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
       
       }
 
