@@ -4,7 +4,7 @@ import { View, Text, Button, Platform, KeyboardAvoidingView, TextInput, StyleShe
 import firebase from 'firebase';
 
 //const firebase = require('firebase');
-//require('firebase/firestore');
+//require('firebase/firestore'); ~ old syntax
 
 export default class Chat extends React.Component {
    constructor () {
