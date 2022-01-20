@@ -82,10 +82,10 @@ export default class Chat extends React.Component {
         const message = myMessage[0]
         
         this.referenceChatMessages.add({
-          text: message.text,
+          _id: message._id,
+          text: message.text || '',
           createdAt: message.createdAt,
-          user: message.user,
-          uid: this.state.uid,
+          user: this.state.user,
         });
       }
 
@@ -95,7 +95,7 @@ export default class Chat extends React.Component {
             messages: GiftedChat.append(previousState.messages, messages),
           }),
           () => {
-            //this.saveMessage();
+            this.saveMessage();
             this.addMessages(messages);
           }
         );
