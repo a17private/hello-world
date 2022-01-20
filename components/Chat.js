@@ -27,8 +27,8 @@ export default class Chat extends React.Component {
         });
         }
 
-        // create a reference to the active user's documents (shopping lists)
-        this.referenceChatMessages = firebase.firestore().collection('messages').where("uid", "==", this.state.uid);
+        // create a reference to the active user's documents (chatApp)
+        this.referenceChatMessages = firebase.firestore().collection('messages');
       
       }
 
@@ -42,7 +42,7 @@ export default class Chat extends React.Component {
             uid: user.uid,
             messages: [],
           });
-          this.unsubscribemessagesUser = this.referenceChatMessagesUser
+          this.unsubscribe = this.referenceChatMessages
             .orderBy("createdAt", "desc")
             .onSnapshot(this.onCollectionUpdate);
         });
@@ -51,7 +51,7 @@ export default class Chat extends React.Component {
 
 
        componentWillUnmount() {
-        this.unsubscribeChatMessages();
+        this.unsubscribe();
       }
 
 
@@ -75,11 +75,13 @@ export default class Chat extends React.Component {
         });
       };
 
-      addMessages() {
+      addMessages(myMessage) {
+        const message = myMessage[0]
+        
         this.referenceChatMessages.add({
-          text: 'Hello',
-          createdAt: '9:00',
-          user: 'MockUser',
+          text: message.text,
+          createdAt: message.createdAt,
+          user: message.user,
           uid: this.state.uid,
         });
       }
@@ -90,8 +92,8 @@ export default class Chat extends React.Component {
             messages: GiftedChat.append(previousState.messages, messages),
           }),
           () => {
-            this.saveMessage();
-            this.addMessage();
+            //this.saveMessage();
+            this.addMessages(messages);
           }
         );
       }
@@ -125,13 +127,6 @@ export default class Chat extends React.Component {
               />
              { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null
              }
-
-            <Button 
-                      onPress={() => {
-                        this.addMessages();
-                      }}
-                      title = "Start Chat"
-                    />
 
            </View> 
 
