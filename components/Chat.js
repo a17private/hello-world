@@ -29,24 +29,45 @@ export default class Chat extends React.Component {
 
         // create a reference to the active user's documents (chatApp)
         this.referenceChatMessages = firebase.firestore().collection('messages');
+        this.refMsgsUser = null;
       
       }
 
     
       componentDidMount() {
-        this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
+       // listens for updates in the collection
+				this.unsubscribe = this.referenceChatMessages
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(this.onCollectionUpdate);
+
+      // listen to authentication events
+      this.authUnsubscribe = firebase
+        .auth()
+        .onAuthStateChanged(async user => {
           if (!user) {
-            firebase.auth().signInAnonymously();
+            return await firebase.auth().signInAnonymously();
           }
+
+          // update user state with currently active data
           this.setState({
             uid: user.uid,
             messages: [],
+            user: {
+              _id: user.uid,
+              name: name,
+              avatar: 'https://placeimg.com/140/140/any',
+            },
           });
-          this.unsubscribe = this.referenceChatMessages
-            .orderBy("createdAt", "desc")
-            .onSnapshot(this.onCollectionUpdate);
+
+          //referencing messages of current user
+          this.refMsgsUser = firebase
+            .firestore()
+            .collection('messages')
+            .where('uid', '==', this.state.uid);
         });
-      }
+      // save messages locally to AsyncStorage
+      this.saveMessages();
+    }
       
 
 
