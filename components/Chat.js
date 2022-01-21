@@ -2,6 +2,8 @@ import React from "react";
 import { GiftedChat, Bubble  } from 'react-native-gifted-chat';
 import { View, Text, Button, Platform, KeyboardAvoidingView, TextInput, StyleSheet } from "react-native";
 import firebase from 'firebase';
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 //const firebase = require('firebase');
 //require('firebase/firestore'); ~ old syntax
