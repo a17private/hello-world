@@ -2,7 +2,7 @@ import React from "react";
 import { GiftedChat, Bubble  } from 'react-native-gifted-chat';
 import { View, Text, Button, Platform, KeyboardAvoidingView, TextInput, StyleSheet } from "react-native";
 import firebase from 'firebase';
-import AsyncStorage from '@react-native-community/async-storage';
+//import AsyncStorage from '@react-native-community/async-storage';//
 
 
 //const firebase = require('firebase');
@@ -42,13 +42,14 @@ export default class Chat extends React.Component {
 
     
       componentDidMount() {
+        this.referenceChatMessages = firebase.firestore().collection('messages');
        // listens for updates in the collection
 				this.unsubscribe = this.referenceChatMessages
         .orderBy('createdAt', 'desc')
         .onSnapshot(this.onCollectionUpdate);
 
-      // listen to authentication events
-      this.authUnsubscribe = firebase
+        // listen to authentication events
+       this.authUnsubscribe = firebase
         .auth()
         .onAuthStateChanged(async user => {
           if (!user) {
