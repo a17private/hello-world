@@ -110,6 +110,16 @@ export default class Chat extends React.Component {
         });
       }
 
+      
+    //save newly added messages to state.messgaes
+    async saveMessages() {
+      try {
+          await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+      } catch (error) {
+          console.log(error.message);
+      }
+  }
+
       onSend(messages = []) {
         this.setState(
           previousState => ({
