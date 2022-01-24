@@ -7,12 +7,13 @@ const firebase = require('firebase').default;
 
 // firebase configuration for chat
 const firebaseConfig = {
-  apiKey: "AIzaSyC9_pvKrjGynivyrSTgd02q3K9VRsqcU8U",
-  authDomain: "chatbox-f7958.firebaseapp.com",
-  projectId: "chatbox-f7958",
-  storageBucket: "chatbox-f7958.appspot.com",
-  messagingSenderId: "285159785820",
-  appId: "1:285159785820:web:91fe4745bc58959495ed99"
+  apiKey: "AIzaSyDfC9rrnsHcbkDYsTvPpyDCPo7MGl3r7K4",
+  authDomain: "chatbox-5b469.firebaseapp.com",
+  projectId: "chatbox-5b469",
+  storageBucket: "chatbox-5b469.appspot.com",
+  messagingSenderId: "173037378161",
+  appId: "1:173037378161:web:edff3102d7e91115b219d0",
+  measurementId: "G-X924KS3LKX"
 };
 
 export default class Chat extends React.Component {

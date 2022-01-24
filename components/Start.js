@@ -30,7 +30,7 @@ export default class Start extends React.Component {
            
             <ImageBackground source={image} style={styles.backgroundImage} >
                <View style={styles.container}>
-                <Text style={{ color: "#Black", fontSize: 12, fontWeight: 600 }}>Introduce yourself!</Text>
+                <Text style={{ color: "#Black", fontSize: 12, fontWeight: 600 }}>write your name!</Text>
                     <TextInput 
                      style={{ height: 40, borderColor: "grey", borderWidth: 1, backgroundColor: "white", padding: 10,  }}
                      onChangeText={(name) => this.setState({ name })}
