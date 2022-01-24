@@ -1,178 +1,181 @@
-import React from "react";
-import { GiftedChat, Bubble  } from 'react-native-gifted-chat';
-import { View, Text, Button, Platform, KeyboardAvoidingView, TextInput, StyleSheet } from "react-native";
-import firebase from 'firebase';
-//import AsyncStorage from '@react-native-community/async-storage';//
+import React from 'react';
+import { View, Text, Button, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import { ImageBackground } from 'react-native-web';
+import { Bubble, GiftedChat, SystemMessage } from 'react-native-gifted-chat';
 
+const firebase = require('firebase').default;
 
-//const firebase = require('firebase');
-//require('firebase/firestore'); ~ old syntax
+// firebase configuration for chat
+const firebaseConfig = {
+  apiKey: "AIzaSyC9_pvKrjGynivyrSTgd02q3K9VRsqcU8U",
+  authDomain: "chatbox-f7958.firebaseapp.com",
+  projectId: "chatbox-f7958",
+  storageBucket: "chatbox-f7958.appspot.com",
+  messagingSenderId: "285159785820",
+  appId: "1:285159785820:web:91fe4745bc58959495ed99"
+};
 
 export default class Chat extends React.Component {
-   constructor () {
-    super();
-        this.state = {
-        uid: 0,
-         messages: [],
-         user: {
-          _id: "",
-          name: "",
-          avatar: "",
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      messages: [],
+      uid: 0,
+      loggedInText: 'Logging in...',
+      user: {
+        _id: '',
+        name: '',
       }
-       };
-        
-
-      
-      if (!firebase.apps.length){
-        firebase.initializeApp( {
-          apiKey: "AIzaSyC9_pvKrjGynivyrSTgd02q3K9VRsqcU8U",
-          authDomain: "chatbox-f7958.firebaseapp.com",
-          projectId: "chatbox-f7958",
-          storageBucket: "chatbox-f7958.appspot.com",
-          messagingSenderId: "285159785820",
-          appId: "1:285159785820:web:91fe4745bc58959495ed99"
-        });
-        }
-
-        // create a reference to the active user's documents (chatApp)
-        this.referenceChatMessages = firebase.firestore().collection('messages');
-        this.refMsgsUser = null;
-      
-      }
-
-    
-      componentDidMount() {
-        this.referenceChatMessages = firebase.firestore().collection('messages');
-       // listens for updates in the collection
-				this.unsubscribe = this.referenceChatMessages
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(this.onCollectionUpdate);
-
-        // listen to authentication events
-       this.authUnsubscribe = firebase
-        .auth()
-        .onAuthStateChanged(async user => {
-          if (!user) {
-            return await firebase.auth().signInAnonymously();
-          }
-
-          // update user state with currently active data
-          this.setState({
-            uid: user.uid,
-            messages: [],
-            user: {
-              _id: user.uid,
-              name: name,
-              avatar: 'https://placeimg.com/140/140/any',
-            },
-          });
-
-          //referencing messages of current user
-          this.refMsgsUser = firebase
-            .firestore()
-            .collection('messages')
-            .where('uid', '==', this.state.uid);
-        });
-      // save messages locally to AsyncStorage
-      this.saveMessages();
+    };
+    // initializing firebase
+    if (!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
     }
-      
 
-
-       componentWillUnmount() {
-        this.unsubscribe();
-      }
-
-
-
-      onCollectionUpdate = (querySnapshot) => {
-        const messages = [];
-        // go through each document
-        querySnapshot.forEach((doc) => {
-          // get the QueryDocumentSnapshot's data
-          let data = doc.data();
-          messages.push({
-            _id: data._id,
-            text: data.text,
-            createdAt: data.createdAt.toDate(),
-            user: {
-              _id: data.user._id,
-              name: data.user.name,
-              avatar: data.user.avatar,
-            },
-          });
-        });
-        this.setState({
-          messages: messages,
-        });
-      };
-
-      addMessages(myMessage) {
-        const message = myMessage[0]
-        
-        this.referenceChatMessages.add({
-          _id: message._id,
-          text: message.text || '',
-          createdAt: message.createdAt,
-          user: this.state.user,
-        });
-      }
-
-      
-    //save newly added messages to state.messgaes
-    async saveMessages() {
-      try {
-          await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
-      } catch (error) {
-          console.log(error.message);
-      }
+    // reference to firebase messages collection
+    this.referenceChatMessages = firebase.firestore().collection('messages');
+    // this.referenceMessageUser = null;
   }
 
-      onSend(messages = []) {
-        this.setState(
-          previousState => ({
-            messages: GiftedChat.append(previousState.messages, messages),
-          }),
-          () => {
-            this.saveMessages();
-            this.addMessages(messages);
+  componentDidMount() {
+    // sets the page title and adds users name to the nav 
+    let { name } = this.props.route.params;
+    this.props.navigation.setOptions({ title: name });
+    
+    this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) {
+        firebase.auth().signInAnonymously();
+        return
+      }
+      // update user state with currently active user data
+      this.setState({
+        uid: user.uid,
+        messages: [],
+        user: {
+          _id: user.uid,
+          name: name,
+        },
+      });
+      // create reference to active user's messages
+      this.referenceMessagesUser = firebase
+        .firestore()
+        .collection('messages')
+        .where('uid', '==', this.state.uid);
+      this.unsubscribe = this.referenceChatMessages
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(this.onCollectionUpdate);
+    });
+  }
+
+  // stop listening to auth and collection changes
+  componentWillUnmount() {
+		this.authUnsubscribe();
+		this.unsubscribe();
+	}
+
+  // stores and adds new messages to database
+  addMessage() {
+    const message = this.state.messages[0];
+    this.referenceChatMessages.add({
+      uid: this.state.uid,
+      _id: message._id,
+      text: message.text,
+      createdAt: message.createdAt,
+      user: message.user,
+    });
+  }
+
+  // callback function for when user sends a message
+  onSend(messages = []) {
+    this.setState(
+      (previousState) => ({
+        messages: GiftedChat.append(previousState.messages, messages),
+      }),
+      () => {
+        this.addMessage();
+      }
+    );
+  }
+
+  // allows user to see new messages when database updates
+  onCollectionUpdate = (querySnapshot) => {
+    const messages = [];
+    // go through each doc
+    querySnapshot.forEach((doc) => {
+      // get the docs data
+      let data = doc.data();
+      messages.push({
+        _id: data._id,
+        text: data.text,
+        createdAt: data.createdAt.toDate(),
+        user: data.user,
+      });
+    });
+    this.setState({
+      messages: messages
+    });
+  }
+
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#808080'
           }
-        );
-      }
+        }}
+      />
+    )
+  }
 
-    renderBubble(props) {
-        return (
-          <Bubble
-            {...props}
-            wrapperStyle={{
-              right: {
-                backgroundColor: '#000'
-              }
-            }}
-          />
-        )
-      }
+  render() {
+    // pulls background image selection from Start screen
+    const { bgImg } = this.props.route.params;
 
-
-    render() {
-        let name = this.props.route.params.name;
-        this.props.navigation.setOptions({ title: name });
-        return(
-           <View style={{flex: 1}}> 
-              <GiftedChat 
+    return (
+      <View style={styles.container}>
+        <ImageBackground
+          source={bgImg}
+          resizeMode='cover'
+          style={styles.bgImg}>
+          <View style={styles.chat}>  
+              <GiftedChat
                 renderBubble={this.renderBubble.bind(this)}
                 messages={this.state.messages}
-                onSend={(messages) => this.onSend(messages)}
+                onSend={messages => this.onSend(messages)}
                 user={{
-                    _id: 1,
-              }}
+                  _id: 1,
+                }}
               />
-             { Platform.OS === 'android' ? <KeyboardAvoidingView behavior="height" /> : null
-             }
-
-           </View> 
-
-        );
-    }
-
+          </View>  
+        </ImageBackground>
+        { Platform.OS === 'android' ? <KeyboardAvoidingView behavior='height' /> : null }
+      </View>
+    );
+  }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 10,
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bgImg: {
+    flex: 1,
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }, 
+  chat: {
+    flex: 1,
+    flexDirection: 'column',
+    width: '100%',
+    marginBottom: 8,
+  }
+});
