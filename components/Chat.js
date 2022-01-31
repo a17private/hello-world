@@ -102,24 +102,30 @@ export default class Chat extends React.Component {
     });
   }
 
-  // allows user to see new messages when database updates
-  onCollectionUpdate = (querySnapshot) => {
+   // when updated set the messages state with the current data 
+   onCollectionUpdate = (querySnapshot) => { 
     const messages = [];
-    // go through each doc
+    // go through each document
     querySnapshot.forEach((doc) => {
-      // get the docs data
-      let data = doc.data();
-      messages.push({
-        _id: data._id,
-        text: data.text,
-        createdAt: data.createdAt.toDate(),
-        user: data.user,
-      });
+        // get the QueryDocumentSnapshot's data
+        let data = doc.data();
+        messages.push({
+            _id: data._id,
+            text: data.text,
+            createdAt: data.createdAt.toDate(),
+            user: {
+                _id: data.user._id,
+                name: data.user.name,
+                avatar: data.user.avatar
+            },
+            image: data.image || null,
+            location: data.location || null,
+        });
     });
-    this.setState({
-      messages: messages
-    });
-  }
+this.setState({
+messages: messages
+});
+};
 
   async deleteMessages() {
     try {
