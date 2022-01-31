@@ -217,7 +217,7 @@ messages: messages
                 messages={this.state.messages}
                 renderInputToolbar={this.renderInputToolbar.bind(this)}
                 renderActions={this.renderCustomActions}
-                    renderCustomView={this.renderCustomView}
+                renderCustomView={this.renderCustomView}
                 onSend={messages => this.onSend(messages)}
                 user={{
                   _id: 1,
