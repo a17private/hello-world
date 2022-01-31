@@ -4,6 +4,7 @@ import { ImageBackground } from 'react-native-web';
 import { Bubble, GiftedChat, SystemMessage, InputToolbar} from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import CustomActions from './CustomActions';
 
 const firebase = require('firebase').default;
 
@@ -142,6 +143,33 @@ export default class Chat extends React.Component {
       );
     }
   }
+
+      //return a MapView when surrentMessage contains location data
+      renderCustomView (props) {
+        const { currentMessage} = props;
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{width: 150,
+                    height: 100,
+                    borderRadius: 13,
+                    margin: 3}}
+                    region={{
+                    latitude: currentMessage.location.latitude,
+                    longitude: currentMessage.location.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
+    }
+
+
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
   
 
   renderBubble(props) {
@@ -171,7 +199,10 @@ export default class Chat extends React.Component {
               <GiftedChat
                 renderBubble={this.renderBubble.bind(this)}
                 messages={this.state.messages}
-                //renderInputToolbar={this.renderInputToolbar}//
+                renderInputToolbar={this.renderInputToolbar.bind(this)}
+                renderActions={this.renderCustomActions(this)}
+                renderActions={this.renderCustomActions(this)}
+                    renderCustomView={this.renderCustomView(this)}
                 onSend={messages => this.onSend(messages)}
                 user={{
                   _id: 1,
@@ -207,5 +238,3 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   }
 });
-
-//Task 5.5//
