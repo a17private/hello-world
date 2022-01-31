@@ -4,6 +4,7 @@ import { ImageBackground } from 'react-native-web';
 import { Bubble, GiftedChat, SystemMessage, InputToolbar} from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import CustomActions from './CustomActions';
 
 const firebase = require('firebase').default;
 
@@ -142,6 +143,10 @@ export default class Chat extends React.Component {
       );
     }
   }
+
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
   
 
   renderBubble(props) {
@@ -172,6 +177,7 @@ export default class Chat extends React.Component {
                 renderBubble={this.renderBubble.bind(this)}
                 messages={this.state.messages}
                 renderInputToolbar={this.renderInputToolbar.bind(this)}
+                renderActions={this.renderCustomActions(this)}
                 onSend={messages => this.onSend(messages)}
                 user={{
                   _id: 1,
