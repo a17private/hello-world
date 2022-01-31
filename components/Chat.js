@@ -5,6 +5,7 @@ import { Bubble, GiftedChat, SystemMessage, InputToolbar} from 'react-native-gif
 import AsyncStorage from '@react-native-community/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import CustomActions from './CustomActions';
+import MapView from 'react-native-maps';
 
 const firebase = require('firebase').default;
 
@@ -30,9 +31,13 @@ export default class Chat extends React.Component {
       user: {
         _id: '',
         name: '',
-      }
-    };
-    // initializing firebase
+      },
+      isConnected: false, 
+      image: null,
+      location: null
+  };
+    
+  // initializing firebase
     if (!firebase.apps.length){
       firebase.initializeApp(firebaseConfig);
     }
@@ -74,16 +79,18 @@ export default class Chat extends React.Component {
 		this.unsubscribe();
 	}
 
-  // stores and adds new messages to database
-  addMessage() {
+  
+  // Add messages to database
+  addMessages() {
     const message = this.state.messages[0];
+    // add a new messages to the collection
     this.referenceChatMessages.add({
-      uid: this.state.uid,
       _id: message._id,
-      text: message.text,
+      text: message.text || "",
       createdAt: message.createdAt,
-      user: message.user,
-      location: message.location
+      user: this.state.user,
+      image: message.image || "",
+      location: message.location || null,
     });
   }
 
