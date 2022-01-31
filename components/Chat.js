@@ -216,9 +216,8 @@ messages: messages
                 renderBubble={this.renderBubble.bind(this)}
                 messages={this.state.messages}
                 renderInputToolbar={this.renderInputToolbar.bind(this)}
-                renderActions={this.renderCustomActions(this)}
-                renderActions={this.renderCustomActions(this)}
-                    renderCustomView={this.renderCustomView(this)}
+                renderActions={this.renderCustomActions}
+                    renderCustomView={this.renderCustomView}
                 onSend={messages => this.onSend(messages)}
                 user={{
                   _id: 1,
