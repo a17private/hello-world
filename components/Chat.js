@@ -32,7 +32,7 @@ export default class Chat extends React.Component {
         _id: '',
         name: '',
       },
-      isConnected: false, 
+      isConnected: true, 
       image: null,
       location: null
   };
