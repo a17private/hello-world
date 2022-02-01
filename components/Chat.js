@@ -60,21 +60,28 @@ export default class Chat extends React.Component {
   };
 
   componentDidMount() {
-
     NetInfo.fetch().then(connection => {
-
-      if (connection.isConnected) {
+      if(connection.isConnected) { // If the user is connected proceed to firebase authentication
         this.setState({ isConnected: true, loggedInText: 'Online' });
-        console.log('online');
+        this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => { // Add a database listener to detect changes in authorization status. Store callback to detach listener in authUnsubscribe property
+          if (!user) { await firebase.auth().signInAnonymously() }; // 
+          this.setState({
+            uid: user.uid,
+            user: {
+              _id: user.uid,
+              name: this.state.name,
+              avatar: 'https://placeimg.com/140/140/any'
+            }
+          });
+          // Add a database listener that will retrieve a snapshot of the messages collection whenever a change is detected, and pass it to the onCollectionUpdate function. Store callback to unsubscribe in unsubscribeMessagesCollection object
+          this.unsubscribeMessagesCollection = this.messagesCollection.orderBy('createdAt', 'desc').onSnapshot(this.onCollectionUpdate);
+        });
       } else {
-        this.setState({ isConnected: false, loggedInText: 'Offline' })
-        console.log('offline');
+        this.setState({ isConnected: false });
+        this.getMessages(); // If the user is offline get messages from async storage
       }
     });
-
-    this.getMessages();
   }
-
  
     // stop listening to auth and collection changes
   componentWillUnmount() {
