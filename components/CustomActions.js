@@ -15,7 +15,7 @@ export default class CustomActions extends React.Component {
         try {
             if (status === "granted") {
                 let result = await ImagePicker.launchImageLibraryAsync({
-                    mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+                    mediaTypes: "Images" 
                 }).catch((error) => {
                 console.error(error);
                 });
