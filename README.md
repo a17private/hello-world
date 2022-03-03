@@ -1,4 +1,4 @@
-#Chatbox
+*Chatbox
 Description
 A chat app for mobile devices built using React Native. The app allows users to message, send pictures, as well as current location to each other.
 
